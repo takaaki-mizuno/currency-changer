@@ -32,7 +32,7 @@
     }
 
     function loadCurrencyData() {
-        var currencyJsonUrl = "currencies.json?jsoncallback=?";
+        var currencyJsonUrl = "https://rawgit.com/takaaki-mizuno/currency-changer/master/currencies.json?jsoncallback=callback";
         $.getJSON(currencyJsonUrl, {})
             .done(function (data) {
                     currencies = data;
