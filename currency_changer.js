@@ -1,17 +1,7 @@
-(function (window, document) {
+(function (window, document, undefined) {
     "use strict";
 
-    var jQuery, $, defaultCurrency, currentCurrency,
-        currencies = {
-            "EUR": {rate: 0.909668, name: "Euro", minorUnit: 2},
-            "HKD": {rate: 7.749832, name: "Hong Kong Dollar", minorUnit: 2},
-            "IDR": {rate: 13952.166667, name: "Indonesia Rupiah", minorUnit: 2},
-            "JPY": {rate: 120.9795, name: "Japanese Yen", minorUnit: 0},
-            "SGD": {rate: 1.413415, name: "Singapore Dollar", minorUnit: 2},
-            "THB": {rate: 36.10768, name: "Thai Baht", minorUnit: 0},
-            "USD": {rate: 1, name: "U.S. Dollar", minorUnit: 2},
-            "VND": {rate: 22484.833333, name: "Vietnam Dong", minorUnit: 0}
-        };
+    var jQuery, $, defaultCurrency, currentCurrency, currencies;
 
     function loadScript(url, callback) {
         var scriptTag = document.createElement('script');
@@ -32,15 +22,26 @@
     }
 
     function loadCurrencyData() {
-        var currencyJsonUrl = "https://rawgit.com/takaaki-mizuno/currency-changer/master/currencies.json?jsoncallback=callback";
-        $.getJSON(currencyJsonUrl, {})
-            .done(function (data) {
-                    currencies = data;
-                    main();
-                }
-            );
+        var currencyJsonUrl = "https://rawgit.com/takaaki-mizuno/currency-changer/master/currencies.js?jsoncallback=callback";
+        $.ajax({
+            url: currencyJsonUrl,
+            dataType: 'jsonp',
+            jsonpCallback: 'callback',
+            cache: true,
+            success: function(data) {
+                currencies = data;
+                main();
+            }
+        });
     }
 
+    function loadCSS(url) {
+        var linkTag  = document.createElement('link');
+        linkTag.setAttribute("type", "text/css");
+        linkTag.setAttribute("href", url);
+        linkTag.setAttribute("rel", "stylesheet");
+        (document.getElementsByTagName("head")[0] || document.documentElement).appendChild(linkTag);
+    }
 
     function main() {
         defaultCurrency = currentCurrency = $("meta[name=default-currency]").attr("content");
@@ -62,15 +63,19 @@
                 currencyData = currencies[currencyCode];
             if (currencyCode == defaultCurrency) {
                 self.text(defaultPrice);
+                return;
             }
+            defaultPrice = defaultPrice.replace(/\D+/g,"");
             var price = parseInt(defaultPrice) * currencyData['rate'] / currencies[defaultCurrency]['rate'];
-            self.html(price.toFixed(currencyData.minorUnit) + '<span class="com.github-takaaki-mizuno-currency-changer-currency-code">' + currencyCode + '</span>');
+            var re = /(\d)(?=(\d\d\d)+(?!\d))/g;
+            self.html(String(price.toFixed(currencyData.minorUnit)).replace(re, '$1,') + '<span class="com-github-takaaki-mizuno-currency-changer-currency-code">' + currencyCode + '</span>');
         });
     }
 
     function buildMenu() {
         var body = $('body'),
-            select = $('<select>', {class: 'com.github-takaaki-mizuno-currency-changer'});
+            div = $('<div>', {class: 'com-github-takaaki-mizuno-currency-changer'}),
+            select = $('<select>');
 
         for (var key in currencies) {
             var option = $('<option value="' + key + '">');
@@ -83,14 +88,15 @@
         select.on('change', function () {
             changeCurrency(this.value);
         });
-        body.append(
-            select
-        );
+        div.append(select);
+        body.append(div);
     }
 
     loadScript("https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js", function () {
         $ = jQuery = window.jQuery.noConflict(true);
         loadCurrencyData();
     });
+
+    loadCSS("currency_changer.css");
 
 }(window, document));

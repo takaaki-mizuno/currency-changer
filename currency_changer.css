@@ -1,7 +1,38 @@
-.com.github-takaaki-mizuno-currency-changer {
+.com-github-takaaki-mizuno-currency-changer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ccc;
+    width: 120px;
+    border-radius: 3px;
+    overflow: hidden;
+    background-color: #fff;
 
+    background: #fff url("http://www.scottgood.com/jsg/blog.nsf/images/arrowdown.gif") no-repeat 90% 50%;
+    z-index: 1000;
 }
 
-.com.github-takaaki-mizuno-currency-changer-currency-code {
+.com-github-takaaki-mizuno-currency-changer select {
+    padding: 5px 8px;
+    width: 130%;
+    border: none;
+    box-shadow: none;
+    background-color: transparent;
+    background-image: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
 
+.com-github-takaaki-mizuno-currency-changer select:focus {
+    outline: none;
+}
+
+.com-github-takaaki-mizuno-currency-changer-currency-code {
+    font-size: 80%;
+    color: #888;
+    font-weight: bold;
+    padding-left: 5px;
 }
